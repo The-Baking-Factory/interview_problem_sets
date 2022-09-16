@@ -1,17 +1,11 @@
 table! {
     stocks (ticker) {
         ticker -> Text,
-        website -> Nullable<Text>,
         ratio_usd -> Nullable<Text>,
         marketcap_usd -> Nullable<Text>,
         price_change -> Nullable<Text>,
         high_24h -> Nullable<Text>,
         low_24h -> Nullable<Text>,
-        high_24h_change -> Nullable<Text>,
-        low_24h_change -> Nullable<Text>,
-        short_ratio -> Nullable<Text>,
-        held_per_insiders -> Nullable<Text>,
-        held_per_institutions -> Nullable<Text>,
         updated_at -> BigInt,
     }
 }

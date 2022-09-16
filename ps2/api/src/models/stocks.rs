@@ -13,17 +13,11 @@ use crate::handlers::stocks::{
 #[table_name = "stocks"]
 pub struct Stock {
     pub ticker: String,
-    pub website: Option<String>,
     pub ratio_usd: Option<String>,
     pub marketcap_usd: Option<String>,
     pub price_change: Option<String>,
     pub high_24h: Option<String>,
     pub low_24h: Option<String>,
-    pub high_24h_change: Option<String>,
-    pub low_24h_change: Option<String>,
-    pub short_ratio: Option<String>,
-    pub held_per_insiders: Option<String>,
-    pub held_per_institutions: Option<String>,
     pub updated_at: i64,
 }
 
@@ -31,8 +25,6 @@ pub struct Stock {
 pub struct StockList {
     #[sql_type = "Text"]
     pub ticker: String,
-    #[sql_type = "Nullable<Text>"]
-    pub website: Option<String>,
     #[sql_type = "Nullable<Text>"]
     pub ratio_usd: Option<String>,
 }
@@ -48,17 +40,11 @@ pub fn stock_by_ticker(
         .filter(ticker.eq(tckr))
         .select((
             ticker,
-            website,
             ratio_usd,
             marketcap_usd,
             price_change,
             high_24h,
             low_24h,
-            high_24h_change,
-            low_24h_change,
-            short_ratio,
-            held_per_insiders,
-            held_per_institutions,
             updated_at,
         ))
         .load(&conn)?;
@@ -77,7 +63,6 @@ pub fn stocks_list(
     let sql_stmt: &str = "
         SELECT
             stocks.ticker AS 'ticker',
-            stocks.website AS 'website',
             stocks.ratio_usd AS 'ratio_usd'
         FROM stocks
         ORDER BY CAST(replace(marketcap_usd, ',','') AS INTEGER) DESC

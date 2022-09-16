@@ -7,7 +7,6 @@ import os
 import discord
 import requests
 import time
-import logging
 import asyncio
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
@@ -18,11 +17,13 @@ TOKEN = os.getenv('DISCORD_TEST_BOT')
 GET_REMINDERS = os.getenv('API_ENDPOINT_REMINDERS_BY_SERVER')
 API_KEY = os.getenv('API_KEY')
 
-logging.basicConfig()
-logger = logging.getLogger()
-fh = logging.FileHandler("../logs/botlog", "a+")
-logger.setLevel(logging.INFO)
-logger.addHandler(fh)
+# TODO
+# Explain what is happening here.
+# Is there a better way to do this?
+# Possible Hints:
+# How often are bot attributes updated? Is it necessary?
+# Are API Responses always valid? Can we remove any code duplicates?
+# How often is the API pinged for data? Is there a better approach?
 
 class Manager(commands.Cog):
 
@@ -36,13 +37,11 @@ class Manager(commands.Cog):
         self.server_ids.append(server_id)
         self.user_reminders[server_id] = []
 
-    def on_server_init(self):
-        active_servers = self.bot.guilds
-        for guild in active_servers:
-            server_id = str(guild.id)
-            self.add_server(server_id)
-
     async def get_reminders(self, server_id):
+        # TODO
+        # write a GET request to API Reminders endpoint
+        # use server_id as a request parameter
+        # use API key as the authorization header
         resp = requests.get(
             GET_REMINDERS + server_id,
             headers = {
@@ -52,18 +51,13 @@ class Manager(commands.Cog):
         )
         return resp.json()
 
-    async def send_msg(self, channel, msg, msg_type, view=None):
+    async def send_msg(self, channel, msg, msg_type):
         try:
+            sent_msg = None
             if msg_type == 1: # embed
-                if view:
-                    sent_msg = await channel.send(embed=msg, view=view)
-                else:
-                    sent_msg = await channel.send(embed=msg)
+                sent_msg = await channel.send(embed=msg)
             else:
-                if view:
-                    sent_msg = await channel.send(msg, view=view)
-                else:
-                    sent_msg = await channel.send(msg)
+                sent_msg = await channel.send(msg)
             return sent_msg
         except discord.NotFound:
             print(f"Failed to change role for {member} ({member.id}): member not found")
@@ -82,11 +76,7 @@ class Manager(commands.Cog):
         reminder_type = d['msg_type']
         reminder_interval = d['msg_interval']
         if (int(d['msg_type']) == 1):
-            await self.send_msg(
-                channel,
-                reminder_msg,
-                0
-            )
+            await self.send_msg(channel, reminder_msg, 0)
         elif (int(d['msg_type']) == 2):
             color = 0x00FF00
             if (d['embed_color']):
@@ -100,14 +90,13 @@ class Manager(commands.Cog):
                 embed.set_author(name=d['embed_title'])
             if (d['thumbnail_icon']):
                 embed.set_thumbnail(url=d['thumbnail_icon'])
-            await self.send_msg(
-                channel,
-                embed,
-                1
-            )
+            await self.send_msg(channel, embed, 1)
 
     @tasks.loop(seconds = 5)
     async def reminders(self):
+        # TODO
+        # Explain what is happening here.
+        # Is there a better way to do this?
         for server_id in self.server_ids:
             user_reminders = await self.get_reminders(server_id)
             print(f'[API] {server_id} {len(user_reminders)} reminders found')
@@ -119,12 +108,13 @@ class Manager(commands.Cog):
 
     @tasks.loop(seconds = 1)
     async def bot_loops(self):
+        # TODO
+        # Explain what is happening here.
+        # hint: how does it related to the above function?
         for tup in self.loops:
             if not tup[1].is_running():
                 print(f"Not Found, Starting {tup[1]}")
                 tup[1].start(tup[0])
-            #else:
-            #    print(f"Found {tup[1]}")
 
     @tasks.loop(seconds=9.0)
     async def playing_status(self):
@@ -139,7 +129,10 @@ class Manager(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         # initialize
-        self.on_server_init()
+        active_servers = self.bot.guilds
+        for guild in active_servers:
+            server_id = str(guild.id)
+            self.add_server(server_id)
         # run tasks
         if not self.playing_status.is_running():
             self.playing_status.start()

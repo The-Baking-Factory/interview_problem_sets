@@ -25,7 +25,6 @@ mod server;
 mod state;
 mod validate;
 pub mod handlers;
-pub mod wsocket;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {

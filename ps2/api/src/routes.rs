@@ -11,32 +11,14 @@ use crate::handlers::{
         get_reminders_by_server,
     },
 };
-use crate::wsocket::{
-    websocket::{
-        echo_ws,
-    },
-};
 use crate::middleware::auth::Authv1 as AuthMiddlewarev1;
-use actix_files::Files;
 use actix_web::{web};
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg
-        // websocket routes
-        .service(
-            web::resource("/ws")
-            .route(web::get().to(echo_ws))
-        )
         // api v1 routes
         .service(
             web::scope("/api")
-            .service(
-                web::scope("/nft").default_service(
-                    Files::new("/metadata", ".")
-                        .show_files_listing()
-                        .use_last_modified(true),
-                ),
-            )
             .service(
                 web::scope("/v1")
                     // Lock down routes with AUTH Middlewarev1 instead of guards
@@ -53,14 +35,6 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
                         web::scope("/reminders")
                             .route("", web::get().to(get_reminders_by_server))
                     )
-                )
-        )
-        // Serve secure static files from the static-private folder
-        .service(
-            web::scope("/secure").wrap(AuthMiddlewarev1).service(
-                Files::new("", "./static-secure")
-                    .index_file("index.html")
-                    .use_last_modified(true),
-            ),
+            )
         );
 }

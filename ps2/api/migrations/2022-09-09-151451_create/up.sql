@@ -1,4 +1,5 @@
-/* @todo
+/**
+ * @todo
  * 1. Modify below so that reminders table has a foreign key reference to servers table through server_id
  * 2. Modify the foreign key and add constraint to actively prevent deletion of a row from servers table,
         if there are reminders that reference that row's server_id (hint: this is the default)
@@ -39,17 +40,11 @@ CREATE INDEX IF NOT EXISTS [IFK_RemindersServerId] ON "reminders" ([server_id]);
 CREATE TABLE IF NOT EXISTS "stocks"
 (
     [ticker]                    TEXT PRIMARY KEY NOT NULL,
-    [website]                   TEXT,
     [ratio_usd]                 TEXT,
     [marketcap_usd]             TEXT,
     [price_change]              TEXT,
     [high_24h]                  TEXT,
     [low_24h]                   TEXT,
-    [high_24h_change]           TEXT,
-    [low_24h_change]            TEXT,
-    [short_ratio]               TEXT,
-    [held_per_insiders]         TEXT,
-    [held_per_institutions]     TEXT,
     [updated_at]                INTEGER
 );
 
