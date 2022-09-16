@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS "reminders";
+DROP TABLE IF EXISTS "servers";
+DROP TABLE IF EXISTS "stocks";
