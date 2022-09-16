@@ -1,0 +1,9 @@
+#we want a rolling file appender
+log4cplus.rootLogger = DEBUG, ROLLING_LOG_FILE
+
+log4cplus.appender.ROLLING_LOG_FILE=log4cplus::RollingFileAppender
+log4cplus.appender.ROLLING_LOG_FILE.MaxFileSize=10MB
+log4cplus.appender.ROLLING_LOG_FILE.DatePattern=yyyy-MM-dd
+log4cplus.appender.ROLLING_LOG_FILE.File=./config/dbops.log
+log4cplus.appender.ROLLING_LOG_FILE.layout=log4cplus::PatternLayout
+log4cplus.appender.ROLLING_LOG_FILE.layout.ConversionPattern=%D{[%m/%d/%y %H:%M:%S]} [%-1b:%-1L] %-5p [%M:] %m%n

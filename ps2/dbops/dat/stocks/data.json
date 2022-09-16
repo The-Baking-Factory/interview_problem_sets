@@ -1,0 +1,18 @@
+{
+    "parse": [
+        {
+            "ticker": "cgtx",
+            "website": "https://www.cogrx.com",
+            "ratio_usd": "1.50",
+            "marketcap_usd": "39,885,884",
+            "price_change": "-0.16",
+            "high_24h": "1.94",
+            "low_24h": "1.79",
+            "high_24h_change": "-0.23",
+            "low_24h_change": "-0.16",
+            "short_ratio": "0.27",
+            "held_per_insiders": "0.28",
+            "held_per_institutions": "0.23"
+        }
+    ]
+}

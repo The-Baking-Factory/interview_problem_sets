@@ -1,0 +1,73 @@
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+# Local History for Visual Studio Code
+.history/
+
+# Common credential files
+**/credentials.json
+**/client_secrets.json
+**/client_secret.json
+*creds*
+*.dat
+*password*
+*.httr-oauth*
+
+# Private Node Modules
+node_modules/
+creds.js
+
+# Private Files
+*.json
+*.csv
+*.csv.gz
+*.tsv
+*.tsv.gz
+*.xlsx
+*.txt
+*.env
+
+# data store
+*.data-store
+dat/
+
+# Mac/OSX
+.DS_Store
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# notebooks
+*.ipynb
+
+
+# plotly dash cache
+cache-directory/
+
+#no database file (too big)
+*.db
+
+#Any log file that we create (there's gonna be lots of loggin')
+*.log
+
+#build/debug directories
+build/
+
+#cmake users txt
+CMakeLists.txt.user
+
+#vscode
+.vscode
+
+#external libraries
+lib/
+
+#command config files
+*.cmd
