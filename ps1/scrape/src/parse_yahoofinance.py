@@ -10,18 +10,21 @@ import asyncio
 import argparse
 import subprocess
 from decimal import Decimal
-from datetime import datetime, timezone
 import yahooquery
 
 DATA_PATH = '../dbops/dat/stocks/data.json'
 ticks_path = "../scrape/dat/ticks.json"
 MAX_REQ_AMOUNT = 10
 
+# TODO
+# Explain this script in detail. How are the data jsons being inserted into the databse?
+# Are there are any code duplicates or unnecessary operations? Remove them if so.
+# Is there a way to perform the logic in this script more efficiently?
+# If so, how would you modify the script?
+
 def save_json(path, data):
     # refactor from nested dict to list of dicts
-    d = {'parse':[]}
-    for c,v in data['parse'].items():
-        d['parse'].append(v)
+    d = {'parse':[v for v in data['parse'].values()]}
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(d, f, ensure_ascii=False, indent=4)
 
@@ -29,9 +32,7 @@ def load_json(path):
     with open(path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     # refactor from list of dicts to nested dict
-    d = {'parse':{}}
-    for obj in data['parse']:
-        d['parse'][obj['coin_id']] = obj
+    d = {'parse':{obj['coin_id']: obj for obj in data['parse']}}
     return d
 
 def load_ticks():
@@ -56,6 +57,7 @@ async def parse(targets = []):
         summary_profile = res.summary_profile
         key_stats = res.key_stats
         for idx, tkr in enumerate(chunk):
+            print(f"parsing {tkr} data")
 
             new = {'parse':{}}
             data = summary_detail[tkr]
@@ -63,113 +65,76 @@ async def parse(targets = []):
             if type(data) != dict:
                 continue
 
-            website = ""
-            if type(summary_profile[tkr]) == dict and ('website' in summary_profile[tkr].keys()):
-                website = summary_profile[tkr]['website']
+            obj = {
+                'ratio_usd': '',
+                'price_change': '',
+                'marketcap_usd': '',
+                'high_24h': '',
+                'low_24h': ''
+            }
 
-            ratio_usd = ""
-            price_change = ""
             if 'bid' in data.keys():
-                ratio_usd = str(data['bid'])
+                obj['ratio_usd'] = str(data['bid'])
                 if 'open' in data.keys():
-                    price_change = str((float(data['bid'])-float(data['open']))/float(data['open']))
-
-            marketcap_usd = ""
-            high_24h = ""
-            low_24h = ""
-            fifty_two_w_high = ""
-            beta = ""
+                    # TODO
+                    # Compute price change between data['bid'] (current price) and data['open']
+                    # Round to two decimal places
+                    # Pretend this is a financial application that requires a high degree of precision with computes, sacrificing speed for precision
+                    # hint: what data type should you use for high precision
+                    obj['price_change'] = round((Decimal(data['bid'])-Decimal(data['open']))/Decimal(data['open']), 2)
             if 'marketCap' in data.keys():
-                marketcap_usd = str(data['marketCap'])
+                obj['marketcap_usd'] = round(data['marketCap'], 1)
             if 'dayHigh' in data.keys():
-                high_24h = str(data['dayHigh'])
+                obj['high_24h'] = str(data['dayHigh'])
             if 'dayLow' in data.keys():
-                low_24h = str(data['dayLow'])
-            if 'fiftyTwoWeekHigh' in data.keys():
-                fifty_two_w_high = str(data['fiftyTwoWeekHigh'])
-            if 'beta' in data.keys():
-                beta = str(data['beta'])
+                obj['low_24h'] = str(data['dayLow'])
 
-            high_24h_change = ""
-            low_24h_change = ""
-            short_ratio = ""
-            held_per_insiders = ""
-            held_per_institutions = ""
-            if ratio_usd and high_24h:
-                high_24h_change = str((float(ratio_usd)-float(high_24h))/float(high_24h))
-            if ratio_usd and low_24h:
-                low_24h_change = str((float(ratio_usd)-float(low_24h))/float(low_24h))
-            if type(key_stats[tkr]) == dict and ('shortRatio' in key_stats[tkr].keys()):
-                short_ratio = str(key_stats[tkr]['shortRatio'])
-            if type(key_stats[tkr]) == dict and ('heldPercentInsiders' in key_stats[tkr].keys()):
-                held_per_insiders = key_stats[tkr]['heldPercentInsiders']
-            if type(key_stats[tkr]) == dict and ('heldPercentInstitutions' in key_stats[tkr].keys()):
-                held_per_institutions = key_stats[tkr]['heldPercentInstitutions']
-
-            if high_24h_change:
-                high_24h_change = round(float(high_24h_change), 2)
-            if low_24h_change:
-                low_24h_change = round(float(low_24h_change), 2)
-            if held_per_insiders:
-                held_per_insiders = round(float(held_per_insiders), 2)
-            if held_per_institutions:
-                held_per_institutions = round(float(held_per_institutions), 2)
-            if price_change:
-                price_change = round(float(price_change), 2)
-            if marketcap_usd:
-                marketcap_usd = round(float(marketcap_usd), 1)
-
-            if ratio_usd and high_24h and low_24h:
-                if (Decimal(ratio_usd) >= 1000):
-                    ratio_usd = round(Decimal(ratio_usd))
-                    ratio_usd = "{:,}".format(ratio_usd)
-                    high_24h = "{:,}".format(round(Decimal(high_24h)))
-                    low_24h = "{:,}".format(round(Decimal(low_24h)))
-                elif (Decimal(ratio_usd) > 0.01):
-                    ratio_usd = round(Decimal(ratio_usd), 2)
-                    high_24h = round(Decimal(high_24h), 2)
-                    low_24h = round(Decimal(low_24h), 2)
-                elif (Decimal(ratio_usd) > 0.001):
-                    ratio_usd = round(Decimal(ratio_usd), 3)
-                    high_24h = round(Decimal(high_24h), 3)
-                    low_24h = round(Decimal(low_24h), 3)
-                elif (Decimal(ratio_usd) > 0.0001):
-                    ratio_usd = round(Decimal(ratio_usd), 4)
-                    high_24h = round(Decimal(high_24h), 4)
-                    low_24h = round(Decimal(low_24h), 4)
-                elif (Decimal(ratio_usd) > 0.00001):
-                    ratio_usd = round(Decimal(ratio_usd), 6)
-                    high_24h = round(Decimal(high_24h), 6)
-                    low_24h = round(Decimal(low_24h), 6)
+            if obj['ratio_usd'] and obj['high_24h'] and obj['low_24h']:
+                if (Decimal(obj['ratio_usd']) >= 1000):
+                    obj['ratio_usd'] = round(Decimal(obj['ratio_usd']))
+                    obj['ratio_usd'] = "{:,}".format(obj['ratio_usd'])
+                    obj['high_24h'] = "{:,}".format(round(Decimal(obj['high_24h'])))
+                    obj['low_24h'] = "{:,}".format(round(Decimal(obj['low_24h'])))
+                elif (Decimal(obj['ratio_usd']) >= 0.1):
+                    obj['ratio_usd'] = f"{Decimal(str(obj['ratio_usd'])):.2E}"
+                    obj['high_24h'] = f"{Decimal(str(obj['high_24h'])):.2E}"
+                    obj['low_24h'] = f"{Decimal(str(obj['low_24h'])):.2E}"
                 else:
-                    ratio_usd = f"{Decimal(str(ratio_usd)):.2E}"
-                    high_24h = f"{Decimal(str(high_24h)):.2E}"
-                    low_24h = f"{Decimal(str(low_24h)):.2E}"
+                    # TODO
+                    # what is the below bit of code doing?
+                    # Is there a better way to do it?
+                    for i in range(2, 6):
+                        thresh = 1 * (10**(-1 * i))
+                        if (Decimal(obj['ratio_usd']) > thresh):
+                            if i == 5:
+                                obj['ratio_usd'] = round(Decimal(obj['ratio_usd']), i+1)
+                                obj['high_24h'] = round(Decimal(obj['high_24h']), i+1)
+                                obj['low_24h'] = round(Decimal(obj['low_24h']), i+1)
+                            else:
+                                obj['ratio_usd'] = round(Decimal(obj['ratio_usd']), i)
+                                obj['high_24h'] = round(Decimal(obj['high_24h']), i)
+                                obj['low_24h'] = round(Decimal(obj['low_24h']), i)
+                            break
 
-            if marketcap_usd and (float(marketcap_usd) >= 1000):
-                marketcap_usd = "{:,}".format(round(marketcap_usd))
+            if obj['marketcap_usd'] and (obj['marketcap_usd'] >= 1000):
+                obj['marketcap_usd'] = "{:,}".format(round(obj['marketcap_usd']))
 
             new['parse'][tkr] = {
                 'ticker': tkr,
-                'website': str(website),
-                'ratio_usd': str(ratio_usd),
-                'marketcap_usd': str(marketcap_usd),
-                'price_change': str(price_change),
-                'high_24h': str(high_24h),
-                'low_24h': str(low_24h),
-                'high_24h_change': str(high_24h_change),
-                'low_24h_change': str(low_24h_change),
-                'short_ratio': str(short_ratio),
-                'held_per_insiders': str(held_per_insiders),
-                'held_per_institutions': str(held_per_institutions),
+                'ratio_usd': str(obj['ratio_usd']),
+                'marketcap_usd': str(obj['marketcap_usd']),
+                'price_change': str(obj['price_change']),
+                'high_24h': str(obj['high_24h']),
+                'low_24h': str(obj['low_24h'])
             }
 
+            print(f"saving json of {tkr} data")
             save_json(DATA_PATH, new)
 
+            print(f"running insertion of {tkr} data")
             cmd = './run.sh'
             process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
             output, error = process.communicate()
-
             if (error):
                 print(f"ERROR: {error}")
 

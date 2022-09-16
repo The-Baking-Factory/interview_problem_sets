@@ -15,7 +15,6 @@ using namespace std;
  * Reads the specified file into a string and returns it
  *
  * @param fpath [in] the path to the file to read
- *
  * @return a string with the file contents
  * @throws ReadFileException if read_file fails for ANY reason
  */

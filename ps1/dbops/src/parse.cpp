@@ -30,7 +30,7 @@ using namespace Ops;
 /**
  * Runs json parsing, calls relevant parse functions
  * @param file_path [in] the file path corresponding to the data json
- * @param data_type [in] the argument structure of data being read (snapshot or lottery)
+ * @param data_type [in] the argument structure of data being read
  * @param j [in] the data json
  * @throws UnsupportedCommandException, UnsupportedDatabaseException
  */

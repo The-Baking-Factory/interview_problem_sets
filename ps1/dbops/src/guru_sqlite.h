@@ -20,7 +20,7 @@ namespace GuruSqlite {
     //custom exceptions go here
     class SqliteException : public std::invalid_argument {
     public:
-        SqliteException(const std::string& msg) : std::invalid_argument("Database error: " + msg) { }
+        SqliteException(const std::string& msg) : std::invalid_argument("Database Error: " + msg) { }
     };
 
     class Statement {
@@ -67,12 +67,21 @@ namespace GuruSqlite {
                 throw SqliteException(sqlite3_errstr(rc));
             }
         }
+        /**
+         * @todo
+         * add a bind for string data type similar to the above
+         */
         void bind(const int idx, const string& v) {
-            const int rc = sqlite3_bind_text(sqlite_stmt, idx, v.c_str(), -1, SQLITE_STATIC); // additional arguments added
+            // additional arguments added
+            const int rc = sqlite3_bind_text(sqlite_stmt, idx, v.c_str(), -1, SQLITE_STATIC);
             if (rc != SQLITE_OK) {
                 throw SqliteException(sqlite3_errstr(rc));
             }
         }
+        /**
+         * @todo
+         * add a bind for double data type similar to the above
+         */
         void bind(const int idx, const double v) {
             const int rc = sqlite3_bind_double(sqlite_stmt, idx, v);
             if (rc != SQLITE_OK) {
@@ -138,13 +147,21 @@ namespace GuruSqlite {
         ~Database() noexcept {
             if (sqlite_ptr != nullptr) {
                 if (sqlite3_close(sqlite_ptr) == SQLITE_LOCKED) {
-                    LOG4CPLUS_WARN(logger, "Unable to close: database is locked");
+                    LOG4CPLUS_WARN(logger, "Unable to close: Database is locked");
                 }
             }
         }
+        /**
+         * @todo
+         * return sqlite3 pointer
+         */
         sqlite3* operator()() {
             return sqlite_ptr;
         }
+        /**
+         * @todo
+         * return Database class pointer
+         */
         Database& operator*() {
             return *this;
         }
