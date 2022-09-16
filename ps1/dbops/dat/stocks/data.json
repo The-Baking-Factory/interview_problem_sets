@@ -1,0 +1,18 @@
+{
+    "parse": [
+        {
+            "ticker": "baba",
+            "website": "https://www.alibabagroup.com",
+            "ratio_usd": "85.63",
+            "marketcap_usd": "226,993,340,416",
+            "price_change": "-0.02",
+            "high_24h": "88.24",
+            "low_24h": "85.42",
+            "high_24h_change": "-0.03",
+            "low_24h_change": "0.0",
+            "short_ratio": "2.42",
+            "held_per_insiders": "0.0",
+            "held_per_institutions": "0.16"
+        }
+    ]
+}
