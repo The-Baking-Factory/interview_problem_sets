@@ -22,6 +22,7 @@ API_KEY = os.getenv('API_KEY')
 # Is there a better way to do this?
 # Possible Hints:
 # How often are bot attributes updated? Is it necessary?
+# What is self.loops doing in the reminders task loop?
 # Are API Responses always valid? Can we remove any code duplicates?
 # How often is the API pinged for data? Is there a better approach?
 
@@ -42,14 +43,7 @@ class Manager(commands.Cog):
         # write a GET request to API Reminders endpoint
         # use server_id as a request parameter
         # use API key as the authorization header
-        resp = requests.get(
-            GET_REMINDERS + server_id,
-            headers = {
-                'Authorization': f'{API_KEY}',
-                'Content-Type': 'application/json'
-            }
-        )
-        return resp.json()
+        # ......
 
     async def send_msg(self, channel, msg, msg_type):
         try:
@@ -128,6 +122,7 @@ class Manager(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+        print(f"Logged in {self.bot.user.id}")
         # initialize
         active_servers = self.bot.guilds
         for guild in active_servers:

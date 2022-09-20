@@ -61,11 +61,7 @@ pub fn stocks_list(
 ) -> Result<StocksListResponse, ApiError> {
     use crate::diesel::sql_query;
     let sql_stmt: &str = "
-        SELECT
-            stocks.ticker AS 'ticker',
-            stocks.ratio_usd AS 'ratio_usd'
-        FROM stocks
-        ORDER BY CAST(replace(marketcap_usd, ',','') AS INTEGER) DESC
+        /* TODO */
     ";
     let conn = pool.get()?;
     let data: Vec<StockList> = sql_query(

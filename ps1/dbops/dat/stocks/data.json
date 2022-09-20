@@ -2,11 +2,11 @@
     "parse": [
         {
             "ticker": "baba",
-            "ratio_usd": "8.60E+1",
-            "marketcap_usd": "228,660,068,352",
-            "price_change": "-0.02",
-            "high_24h": "8.82E+1",
-            "low_24h": "8.54E+1"
+            "ratio_usd": "8.78E+1",
+            "marketcap_usd": "239,171,371,008",
+            "price_change": "-0.00",
+            "high_24h": "8.87E+1",
+            "low_24h": "8.75E+1"
         }
     ]
 }
