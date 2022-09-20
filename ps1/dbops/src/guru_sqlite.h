@@ -72,21 +72,14 @@ namespace GuruSqlite {
          * add a bind for string data type similar to the above
          */
         void bind(const int idx, const string& v) {
-            // additional arguments added
-            const int rc = sqlite3_bind_text(sqlite_stmt, idx, v.c_str(), -1, SQLITE_STATIC);
-            if (rc != SQLITE_OK) {
-                throw SqliteException(sqlite3_errstr(rc));
-            }
+            /* TODO */
         }
         /**
          * @todo
          * add a bind for double data type similar to the above
          */
         void bind(const int idx, const double v) {
-            const int rc = sqlite3_bind_double(sqlite_stmt, idx, v);
-            if (rc != SQLITE_OK) {
-                throw SqliteException(sqlite3_errstr(rc));
-            }
+            /* TODO */
         }
 
         /**
@@ -156,14 +149,14 @@ namespace GuruSqlite {
          * return sqlite3 pointer
          */
         sqlite3* operator()() {
-            return sqlite_ptr;
+            /* TODO */
         }
         /**
          * @todo
          * return Database class pointer
          */
         Database& operator*() {
-            return *this;
+            /* TODO */
         }
 
         private:

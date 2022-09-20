@@ -29,21 +29,5 @@ struct stock {
     // these are strings because the purpose is for display
     // need to be formatted during the scrape, before insertion
     // formatting not handled in these scripts
-    std::string ticker;
-    std::string ratio_usd;
-    std::string marketcap_usd;
-    std::string price_change;
-    std::string high_24h;
-    std::string low_24h;
-    int64_t updated_at;
-    // base constructor
-    stock() {
-        ticker = "";
-        ratio_usd = "";
-        marketcap_usd = "";
-        price_change = "";
-        high_24h = "";
-        low_24h = "";
-        updated_at = 0;
-    }
+    /* TODO */
 };

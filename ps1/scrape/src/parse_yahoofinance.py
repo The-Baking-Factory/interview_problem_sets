@@ -81,7 +81,7 @@ async def parse(targets = []):
                     # Round to two decimal places
                     # Pretend this is a financial application that requires a high degree of precision with computes, sacrificing speed for precision
                     # hint: what data type should you use for high precision
-                    obj['price_change'] = round((Decimal(data['bid'])-Decimal(data['open']))/Decimal(data['open']), 2)
+                    # ...
             if 'marketCap' in data.keys():
                 obj['marketcap_usd'] = round(data['marketCap'], 1)
             if 'dayHigh' in data.keys():

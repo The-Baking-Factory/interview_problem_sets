@@ -51,9 +51,7 @@ namespace Parser {
      * function to get current time as int64
      */
     int64_t get_unix_time() {
-        std::time_t unix_time = std::time(nullptr);
-        int64_t int_unix_time = *((int64_t*)&unix_time);
-        return int_unix_time;
+        /* TODO */
     }
 
 }
@@ -61,26 +59,16 @@ namespace Parser {
 /* Insertion Statements namespace */
 namespace InsertStatements {
 
+    /**
+     * @todo
+     * function to create and execute an insertion statement for stocks, using all the columns
+     * hint: don't forget to bind stk struct attributes
+     */
     void insert_stock(
         Database& db,
         stock& stk
     ) {
-        /**
-         * @todo
-         * function to create and execute an insertion statement for stocks, using all the columns
-         * hint: don't forget to bind stk struct attributes
-         */
-        db.create_statement(
-            "INSERT INTO stocks (ticker, ratio_usd, marketcap_usd, price_change, high_24h, low_24h, updated_at)"
-            " VALUES (:ticker, :ratio_usd, :marketcap_usd, :price_change, :high_24h, :low_24h, :updated_at)")
-        .bind(":ticker", stk.ticker)
-        .bind(":ratio_usd", stk.ratio_usd)
-        .bind(":marketcap_usd", stk.marketcap_usd)
-        .bind(":price_change", stk.price_change)
-        .bind(":high_24h", stk.high_24h)
-        .bind(":low_24h", stk.low_24h)
-        .bind(":updated_at", stk.updated_at)
-        .exec();
+        /* TODO */
     }
 
 }
@@ -97,19 +85,7 @@ namespace UpdateStatements {
         Database& db,
         stock& stk
     ) {
-        std::string update = "UPDATE stocks SET ";
-        update += "ratio_usd = :ratio_usd, marketcap_usd = :marketcap_usd, price_change = :price_change";
-        update += ", high_24h = :high_24h, low_24h = :low_24h, updated_at = :updated_at";
-        update += " WHERE ticker = :ticker";
-        Statement update_stmt = db.create_statement(update);
-        update_stmt.bind(":ratio_usd", stk.ratio_usd);
-        update_stmt.bind(":marketcap_usd", stk.marketcap_usd);
-        update_stmt.bind(":price_change", stk.price_change);
-        update_stmt.bind(":high_24h", stk.high_24h);
-        update_stmt.bind(":low_24h", stk.low_24h);
-        update_stmt.bind(":updated_at", stk.updated_at);
-        update_stmt.bind(":ticker", stk.ticker);
-        update_stmt.exec();
+        /* TODO */
     }
 }
 
@@ -123,9 +99,7 @@ namespace DeleteStatements {
     void flush_all_stocks(
         Database& db
     ) {
-        std::string flush = "DELETE FROM stocks";
-        Statement flush_stmt = db.create_statement(flush);
-        flush_stmt.exec();
+        /* TODO */
     }
 }
 
@@ -151,9 +125,9 @@ namespace Ops {
                 stk.updated_at = Parser::get_unix_time();
                 /**
                  * @todo
-                 * check_id function to check whether ticker exists in stocks table, in which case update, o/w insert
+                 * use check_id function to check whether ticker exists in stocks table, in which case update, o/w insert
                  */
-                if (check_id(db, stk.ticker, "SELECT COUNT (DISTINCT ticker) FROM stocks WHERE ticker = :ticker", ":ticker")) {
+                if (/* TODO */) {
                     LOG4CPLUS_INFO(logger, "UPDATE: "+stk.ticker);
                     UpdateStatements::update_stock(db, stk);
                 } else {
