@@ -7,7 +7,9 @@ import os
 import discord
 import requests
 import time
+import aiohttp
 import asyncio
+import configparser
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
@@ -16,6 +18,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TEST_BOT')
 GET_REMINDERS = os.getenv('API_ENDPOINT_REMINDERS_BY_SERVER')
 API_KEY = os.getenv('API_KEY')
+API_URL = 'http://localhost:5050/api/v1/'
+CONFIG_PATH = 'conf.ini'
 
 # TODO
 # Explain what is happening here.
@@ -25,6 +29,52 @@ API_KEY = os.getenv('API_KEY')
 # What is self.loops doing in the reminders task loop?
 # Are API Responses always valid? Can we remove any code duplicates?
 # How often is the API pinged for data? Is there a better approach?
+# What is the difference between using requests vs aiohttp here?
+
+class BotAPI:
+
+    def __init__(self, API, url, session):
+        config = configparser.ConfigParser()
+        config.read(CONFIG_PATH)
+        self.session = session
+        self.url = config.get(API, url).strip("'")
+        self.headers = {
+            'Authorization': f'{API_KEY}',
+            'Content-Type': 'application/json'
+        }
+
+    async def get(self, server_id):
+        async with self.session.get(
+            API_URL+self.url.format(server_id = server_id),
+            headers=self.headers
+        ) as res:
+            json = await res.json()
+            return json
+
+    async def post(self, data):
+        async with self.session.post(
+            API_URL+self.url,
+            json=data,
+            headers=self.headers
+        ) as res:
+            json = await res.json()
+            return json
+
+    async def put(self, data):
+        async with self.session.put(
+            API_URL+self.url,
+            json=data,
+            headers=self.headers
+        ) as res:
+            return res.status
+
+    async def delete(self, data):
+        async with self.session.delete(
+            API_URL+self.url,
+            json=data,
+            headers=self.headers
+        ) as res:
+            return res.status
 
 class Manager(commands.Cog):
 
@@ -33,6 +83,8 @@ class Manager(commands.Cog):
         self.server_ids = []
         self.user_reminders = {}
         self.loops = []
+        conn = aiohttp.TCPConnector(limit=None, ttl_dns_cache=300)
+        self.session = aiohttp.ClientSession(connector=conn)
 
     def add_server(self, server_id: str):
         self.server_ids.append(server_id)
@@ -40,9 +92,9 @@ class Manager(commands.Cog):
 
     async def get_reminders(self, server_id):
         # TODO
-        # write a GET request to API Reminders endpoint
-        # use server_id as a request parameter
-        # use API key as the authorization header
+        # send a GET request to API Reminders endpoint
+        # make sure server_id is request parameter and API key is authorization header
+        # hint: ideally use the BotAPI class above (and thereby aiohttp session)
         # ......
 
     async def send_msg(self, channel, msg, msg_type):
